@@ -4,6 +4,7 @@ import com.github.lgooddatepicker.components.DatePicker;
 import model.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import test_server_db.HibernateUtil;
 import java.util.List;
@@ -183,9 +184,10 @@ public class ReservationFormPanel extends JPanel {
 
     public void addReservation() {
         Session session = null;
+        Transaction transaction = null;
         try (SessionFactory factory = HibernateUtil.createSessionFactory()) {
             session = factory.getCurrentSession();
-            session.beginTransaction();
+            transaction = session.beginTransaction();
 
             String fName = fNameField.getText();
             String lName = lNameField.getText();
@@ -214,10 +216,12 @@ public class ReservationFormPanel extends JPanel {
                 // Handle case where no available room is found
             }
 
-            session.getTransaction().commit();
+//            session.getTransaction().commit();
+            transaction.commit();
         } catch (Exception ex) {
-            if (session != null) {
-                session.getTransaction().rollback();
+            if (transaction != null) {
+//                session.getTransaction().rollback();
+                transaction.rollback();
             }
             ex.printStackTrace();
             System.out.println("Error adding reservation");
@@ -263,12 +267,12 @@ public class ReservationFormPanel extends JPanel {
     // Method to get the price of the room based on roomID
     private int getRoomPrice(int roomID) {
         try (Session session = HibernateUtil.createSessionFactory().getCurrentSession()) {
-            session.beginTransaction();
+//            session.beginTransaction();
 
             // Retrieve the room object based on roomID
             Rooms room = session.get(Rooms.class, roomID);
 
-            session.getTransaction().commit();
+//            session.getTransaction().commit();
 
             if (room != null) {
                 return room.getPrice();
@@ -335,7 +339,9 @@ public class ReservationFormPanel extends JPanel {
 
     public int getFirstAvailableRoomID(Session session, LocalDate dateIn, LocalDate dateOut) {
         try {
-            session.beginTransaction();
+            String strDateIn = dateIn.toString();
+            String strDateOut = dateOut.toString();
+//            session.beginTransaction();
 
             // Query to find rooms that don't have reservations overlapping with the specified time frame
             String hql = "SELECT r.roomID " +
@@ -347,13 +353,13 @@ public class ReservationFormPanel extends JPanel {
                     ")";
 
             Query<Integer> query = session.createQuery(hql, Integer.class);
-            query.setParameter("dateIn", dateIn);
-            query.setParameter("dateOut", dateOut);
+            query.setParameter("dateIn", strDateIn);
+            query.setParameter("dateOut", strDateOut);
 
             // Retrieve the first available room ID
             List<Integer> availableRoomIDs = query.setMaxResults(1).getResultList();
 
-            session.getTransaction().commit();
+//            session.getTransaction().commit();
 
             if (!availableRoomIDs.isEmpty()) {
                 return availableRoomIDs.get(0);

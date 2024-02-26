@@ -13,7 +13,8 @@ public class HibernateDemoApp {
         ReservationsDao reservationsDao = new ReservationsDaoImpl();
 
         // SAVE
-//        reservationsDao.save(new Reservations(2, 2, 2, "Daria", "Babić", 654321, "db@gm.com", "2020-12-15", "2020-12-18", "TwoBeds", "Google Pay", 300));
+        reservationsDao.save(new Reservations(1, 1, 1, "Duje", "Buljat", 123456, "db@gm.com", "2020-12-12", "2020-12-14", "OneBed", "Cash", 100));
+        reservationsDao.save(new Reservations(2, 2, 2, "Daria", "Babić", 654321, "db@gm.com", "2020-12-15", "2020-12-18", "TwoBeds", "Google Pay", 300));
 
 
         System.out.println("Getting all reservations from the database: ");
